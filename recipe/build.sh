@@ -8,10 +8,8 @@ if [[ "$target_platform" == win* ]] ; then
     export BUILD=x86_64-pc-mingw64
     if [[ "${target_platform}" == "win-arm64" ]]; then
       export HOST=aarch64-pc-mingw64
-      windres_target="pe-aarch64"
     else
       export HOST=x86_64-pc-mingw64
-      windres_target="pe-x86-64"
     fi
 
     # Setup needed for autoreconf. Keep am_version sync'ed with meta.yaml.
@@ -35,13 +33,18 @@ if [[ "$target_platform" == win* ]] ; then
     export RANLIB=":"
     export STRIP=":"
 
-    # We also need a custom wrapper for `cl -nologo -E` because the
-    # invocation of the "windres"/"rc" tool can't handle preprocessor names
-    # containing spaces. Windres also breaks if we don't use `--use-temp-file`
-    # -- looks like the Cygwin popen() call might not work on Windows.
-
-    export RC="windres -F $windres_target --use-temp-file --preprocessor $RECIPE_DIR/msvcpp.sh"
-    export WINDRES="windres -F $windres_target --use-temp-file --preprocessor $RECIPE_DIR/msvcpp.sh"
+    if [[ "${target_platform}" == "win-64" ]]; then
+      # We also need a custom wrapper for `cl -nologo -E` because the
+      # invocation of the "windres"/"rc" tool can't handle preprocessor names
+      # containing spaces. Windres also breaks if we don't use `--use-temp-file`
+      # -- looks like the Cygwin popen() call might not work on Windows.
+      export RC="windres -F $windres_target --use-temp-file --preprocessor $RECIPE_DIR/msvcpp.sh"
+      export WINDRES="windres -F $windres_target --use-temp-file --preprocessor $RECIPE_DIR/msvcpp.sh"
+    else
+      # Available windres does not know about ARM
+      export RC="rc.exe"  
+      export WINDRES="rc.exe"
+    fi
 
     # We need to get the mingw stub libraries that let us link with system
     # DLLs. Stock gettext gets built on Windows so I'm not sure why it doesn't
