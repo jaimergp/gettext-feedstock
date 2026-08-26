@@ -41,9 +41,9 @@ if [[ "$target_platform" == win* ]] ; then
       export RC="windres -F $windres_target --use-temp-file --preprocessor $RECIPE_DIR/msvcpp.sh"
       export WINDRES="windres -F $windres_target --use-temp-file --preprocessor $RECIPE_DIR/msvcpp.sh"
     else
-      # Available windres does not know about ARM
-      export RC="rc.exe"  
-      export WINDRES="rc.exe"
+      # Available windres does not know about ARM; forward to rc.exe via shim
+      export RC="$RECIPE_DIR/windres-rc.sh"  
+      export WINDRES="$RECIPE_DIR/windres-rc.sh"
     fi
 
     # We need to get the mingw stub libraries that let us link with system
@@ -76,6 +76,7 @@ else
 fi
 
 ./configure \
+  RC=
   --prefix=$PREFIX \
   --build=$BUILD \
   --host=$HOST \
