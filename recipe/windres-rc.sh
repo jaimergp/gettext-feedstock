@@ -9,4 +9,5 @@ for arg in "$@"; do
         *) args+=("$arg") ;;
     esac
 done
+set -x
 exec rc.exe "${args[@]}"
