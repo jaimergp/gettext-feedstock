@@ -38,8 +38,8 @@ if [[ "$target_platform" == win* ]] ; then
       # invocation of the "windres"/"rc" tool can't handle preprocessor names
       # containing spaces. Windres also breaks if we don't use `--use-temp-file`
       # -- looks like the Cygwin popen() call might not work on Windows.
-      export RC="windres -F $windres_target --use-temp-file --preprocessor $RECIPE_DIR/msvcpp.sh"
-      export WINDRES="windres -F $windres_target --use-temp-file --preprocessor $RECIPE_DIR/msvcpp.sh"
+      export RC="windres --use-temp-file --preprocessor $RECIPE_DIR/msvcpp.sh"
+      export WINDRES="windres --use-temp-file --preprocessor $RECIPE_DIR/msvcpp.sh"
     else
       # Available windres does not know about ARM; forward to rc.exe via shim
       export RC="$RECIPE_DIR/windres-rc.sh"  
