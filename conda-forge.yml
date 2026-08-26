@@ -10,4 +10,5 @@ conda_build:
   pkg_format: '2'
   error_overdepending: true
   error_overlinking: true
+upload_on_branch: main
 test: native_and_emulated
