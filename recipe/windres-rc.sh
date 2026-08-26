@@ -6,8 +6,7 @@ next_is_out=0
 
 for arg in "$@"; do
     if [[ $next_is_out -eq 1 ]]; then
-        # rc.exe strictly requires /fo directly glued to the path (no space)
-        args+=("/fo$arg")
+        args+=("/fo" "$arg")
         next_is_out=0
         continue
     fi
@@ -17,20 +16,21 @@ for arg in "$@"; do
             next_is_out=1
             ;;
         -o*)
-            # Handle -ofilename.obj
             out_file="${arg#-o}"
-            args+=("/fo${out_file}")
+            args+=("/fo" "${out_file}")
             ;;
         -i)
             # Ignore windres input flag (rc accepts input file positionally)
             ;;
         -D*)
-            # Map -D to /d
-            args+=("${arg/-D//d}")
+            macro="${arg#-D}"
+            # Strip escaped quotes inside macro strings
+            macro="${macro//\\\"/\"}"
+            args+=("/d" "${macro}")
             ;;
         -I*)
-            # Map -I to /i
-            args+=("${arg/-I//i}")
+            include_dir="${arg#-I}"
+            args+=("/i" "${include_dir}")
             ;;
         --output-format=*|-O*)
             # Drop GNU windres format flags
