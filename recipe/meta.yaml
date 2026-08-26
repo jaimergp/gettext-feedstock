@@ -21,7 +21,7 @@ source:
     - 0008-Avoid-close-inconsistencies.patch                           # [win]
 
 build:
-  number: 3
+  number: 4
 
 requirements:
   build:
