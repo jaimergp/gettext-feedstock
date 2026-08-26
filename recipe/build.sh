@@ -66,6 +66,8 @@ else
     # Get an updated config.sub and config.guess
    cp $BUILD_PREFIX/share/libtool/build-aux/config.* build-aux/
    export CPP="$CC -E"
+   # GCC 14+ go stricter about this; was only a warning before
+   export CFLAGS="${CFLAGS:-} -Wno-error=incompatible-pointer-types"
 fi
 
 ./configure \
