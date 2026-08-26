@@ -22,6 +22,8 @@ source:
 
 build:
   number: 4
+  # TODO: Revert before merging
+  skip: true  # [not win]
 
 requirements:
   build:
