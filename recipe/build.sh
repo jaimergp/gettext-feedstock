@@ -76,7 +76,6 @@ else
 fi
 
 ./configure \
-  RC=
   --prefix=$PREFIX \
   --build=$BUILD \
   --host=$HOST \
