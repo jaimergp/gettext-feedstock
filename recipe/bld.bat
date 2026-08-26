@@ -3,7 +3,7 @@
 
 copy "%RECIPE_DIR%\build.sh" .
 
-set MSYSTEM=MINGW%ARCH%
+set MSYSTEM=MINGW64
 set MSYS2_PATH_TYPE=inherit
 set CHERE_INVOKING=1
 

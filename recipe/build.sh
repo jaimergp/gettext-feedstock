@@ -6,7 +6,11 @@ if [[ "$target_platform" == win* ]] ; then
     export PREFIX="$LIBRARY_PREFIX_U"
     export PATH="$PATH_OVERRIDE"
     export BUILD=x86_64-pc-mingw64
-    export HOST=x86_64-pc-mingw64
+    if [[ "${target_platform}" == "win-arm64" ]]; then
+      export HOST=aarch64-pc-mingw64
+    else
+      export HOST=x86_64-pc-mingw64
+    fi
 
     # Setup needed for autoreconf. Keep am_version sync'ed with meta.yaml.
 
@@ -42,7 +46,11 @@ if [[ "$target_platform" == win* ]] ; then
     # have any needed Windows OS libraries specified anywhere, but it doesn't,
     # so we add them here too.
 
-    export LDFLAGS="${LDFLAGS:-} -L/mingw-w64/x86_64-w64-mingw32/lib -L$PREFIX/lib"
+    if [[ "${target_platform}" == "win-arm64" ]]; then
+        export LDFLAGS="${LDFLAGS:-} -L$PREFIX/lib"
+    else
+        export LDFLAGS="${LDFLAGS:-} -L/mingw-w64/x86_64-w64-mingw32/lib -L$PREFIX/lib"
+    fi
 
     # We need the -MD flag ("link with MSVCRT.lib"); otherwise our executables
     # can crash with error -1073740791 = 0xC0000409 = STATUS_STACK_BUFFER_OVERRUN
