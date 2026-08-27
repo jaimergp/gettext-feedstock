@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-args=()
+flags=()
+input_file=""
+
 next_is_out=0
 
 for arg in "$@"; do
     if [[ $next_is_out -eq 1 ]]; then
-        args+=("/fo" "$arg")
+        flags+=("/fo" "$arg")
         next_is_out=0
         continue
     fi
@@ -17,28 +19,37 @@ for arg in "$@"; do
             ;;
         -o*)
             out_file="${arg#-o}"
-            args+=("/fo" "${out_file}")
+            flags+=("/fo" "${out_file}")
             ;;
         -i)
-            # Ignore windres input flag (rc accepts input file positionally)
+            # Ignore windres input flag
             ;;
         -D*)
             macro="${arg#-D}"
-            # Strip escaped quotes inside macro strings
-            macro="${macro//\\\"/\"}"
-            args+=("/d" "${macro}")
+            # Strip literal quote characters that break rc.exe /d flags
+            macro="${macro//\"/}"
+            flags+=("/d" "${macro}")
             ;;
         -I*)
             include_dir="${arg#-I}"
-            args+=("/i" "${include_dir}")
+            flags+=("/i" "${include_dir}")
             ;;
         --output-format=*|-O*)
             # Drop GNU windres format flags
             ;;
+        *.rc)
+            input_file="$arg"
+            ;;
         *)
-            args+=("$arg")
+            flags+=("$arg")
             ;;
     esac
 done
+
 set -x
-exec rc.exe "${args[@]}"
+# Ensure input file is passed strictly at the very end
+if [[ -n "$input_file" ]]; then
+    exec rc.exe "${flags[@]}" "$input_file"
+else
+    exec rc.exe "${flags[@]}"
+fi
